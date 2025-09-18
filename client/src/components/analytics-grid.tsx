@@ -40,7 +40,7 @@ const roiData = [
 
 export function AnalyticsGrid() {
   const [dateRange, setDateRange] = useState("30");
-  const [channel, setChannel] = useState("");
+  const [channel, setChannel] = useState("all");
 
   return (
     <motion.div
@@ -71,7 +71,7 @@ export function AnalyticsGrid() {
               <SelectValue placeholder="All Channels" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Channels</SelectItem>
+              <SelectItem value="all">All Channels</SelectItem>
               <SelectItem value="whatsapp">WhatsApp</SelectItem>
               <SelectItem value="instagram">Instagram</SelectItem>
               <SelectItem value="messenger">Messenger</SelectItem>

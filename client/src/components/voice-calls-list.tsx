@@ -36,14 +36,14 @@ const statusColors = {
 
 export function VoiceCallsList() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sentimentFilter, setSentimentFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [sentimentFilter, setSentimentFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const { toast } = useToast();
 
   const filteredCalls = mockCalls.filter(call =>
     call.caller.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (sentimentFilter === "" || call.sentiment === sentimentFilter) &&
-    (typeFilter === "" || call.type === typeFilter)
+    (sentimentFilter === "all" || call.sentiment === sentimentFilter) &&
+    (typeFilter === "all" || call.type === typeFilter)
   );
 
   const handleHumanTakeover = (callId: number) => {
@@ -83,7 +83,7 @@ export function VoiceCallsList() {
                 <SelectValue placeholder="Sentiment" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="positive">Positive</SelectItem>
                 <SelectItem value="neutral">Neutral</SelectItem>
                 <SelectItem value="negative">Negative</SelectItem>
@@ -94,7 +94,7 @@ export function VoiceCallsList() {
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="inbound">Inbound</SelectItem>
                 <SelectItem value="outbound">Outbound</SelectItem>
               </SelectContent>

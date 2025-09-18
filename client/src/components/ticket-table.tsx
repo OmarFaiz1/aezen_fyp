@@ -35,14 +35,14 @@ interface TicketTableProps {
 
 export function TicketTable({ onViewTicket, onChatWithTicket }: TicketTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
 
   const filteredTickets = mockTickets.filter(ticket =>
     (ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
      ticket.id.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (statusFilter === "" || ticket.status === statusFilter) &&
-    (priorityFilter === "" || ticket.priority === priorityFilter)
+    (statusFilter === "all" || ticket.status === statusFilter) &&
+    (priorityFilter === "all" || ticket.priority === priorityFilter)
   );
 
   return (
@@ -70,7 +70,7 @@ export function TicketTable({ onViewTicket, onChatWithTicket }: TicketTableProps
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="open">Open</SelectItem>
                 <SelectItem value="in-progress">In Progress</SelectItem>
                 <SelectItem value="resolved">Resolved</SelectItem>
@@ -81,7 +81,7 @@ export function TicketTable({ onViewTicket, onChatWithTicket }: TicketTableProps
                 <SelectValue placeholder="Priority" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="low">Low</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>

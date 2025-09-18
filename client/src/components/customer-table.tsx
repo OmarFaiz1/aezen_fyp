@@ -28,13 +28,13 @@ interface CustomerTableProps {
 
 export function CustomerTable({ onViewCustomer }: CustomerTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [dateRange, setDateRange] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateRange, setDateRange] = useState("all");
 
   const filteredCustomers = mockCustomers.filter(customer =>
     (customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
      customer.orderId.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (statusFilter === "" || customer.status === statusFilter)
+    (statusFilter === "all" || customer.status === statusFilter)
   );
 
   return (
@@ -65,7 +65,7 @@ export function CustomerTable({ onViewCustomer }: CustomerTableProps) {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="Confirmed">Confirmed</SelectItem>
                 <SelectItem value="Pending">Pending</SelectItem>
                 <SelectItem value="Shipped">Shipped</SelectItem>
@@ -77,7 +77,7 @@ export function CustomerTable({ onViewCustomer }: CustomerTableProps) {
                 <SelectValue placeholder="Date Range" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Time</SelectItem>
+                <SelectItem value="all">All Time</SelectItem>
                 <SelectItem value="7">Last 7 days</SelectItem>
                 <SelectItem value="30">Last 30 days</SelectItem>
                 <SelectItem value="90">Last 90 days</SelectItem>

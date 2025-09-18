@@ -60,14 +60,14 @@ interface ConversationListProps {
 
 export function ConversationList({ onSelectConversation }: ConversationListProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedChannel, setSelectedChannel] = useState("");
-  const [selectedTeam, setSelectedTeam] = useState("");
+  const [selectedChannel, setSelectedChannel] = useState("all");
+  const [selectedTeam, setSelectedTeam] = useState("all");
 
   const filteredConversations = mockConversations.filter(conv =>
     (conv.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
      conv.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedChannel === "" || conv.channel === selectedChannel) &&
-    (selectedTeam === "" || conv.team === selectedTeam)
+    (selectedChannel === "all" || conv.channel === selectedChannel) &&
+    (selectedTeam === "all" || conv.team === selectedTeam)
   );
 
   return (
@@ -98,7 +98,7 @@ export function ConversationList({ onSelectConversation }: ConversationListProps
                 <SelectValue placeholder="Channel" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="WhatsApp">WhatsApp</SelectItem>
                 <SelectItem value="Instagram">Instagram</SelectItem>
                 <SelectItem value="Messenger">Messenger</SelectItem>
@@ -109,7 +109,7 @@ export function ConversationList({ onSelectConversation }: ConversationListProps
                 <SelectValue placeholder="Team" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="Support">Support</SelectItem>
                 <SelectItem value="Sales">Sales</SelectItem>
               </SelectContent>
