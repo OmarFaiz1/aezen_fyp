@@ -9,10 +9,10 @@ import { motion } from "framer-motion";
 
 // todo: remove mock functionality
 const mockCustomers = [
-  { id: 1, name: 'Alice Smith', orderId: 'ORD123', status: 'Confirmed', deliveryDate: '2023-09-20', phone: '+1234567890', email: 'alice@example.com' },
-  { id: 2, name: 'Bob Johnson', orderId: 'ORD456', status: 'Pending', deliveryDate: '2023-09-25', phone: '+0987654321', email: 'bob@example.com' },
-  { id: 3, name: 'Carol Williams', orderId: 'ORD789', status: 'Shipped', deliveryDate: '2023-09-18', phone: '+1122334455', email: 'carol@example.com' },
-  { id: 4, name: 'David Brown', orderId: 'ORD321', status: 'Delivered', deliveryDate: '2023-09-15', phone: '+5566778899', email: 'david@example.com' },
+  { id: 1, name: 'farah', orderId: 'ORD123', status: 'Confirmed', deliveryDate: '2023-09-20', phone: '+1234567890', email: 'farah@gmail.com' },
+  { id: 2, name: 'aleem', orderId: 'ORD456', status: 'Pending', deliveryDate: '2023-09-25', phone: '+0987654321', email: 'aleem@gmail.com' },
+  { id: 3, name: 'navid', orderId: 'ORD789', status: 'Shipped', deliveryDate: '2023-09-18', phone: '+1122334455', email: 'navid@gmail.com' },
+  { id: 4, name: 'zahid', orderId: 'ORD321', status: 'Delivered', deliveryDate: '2023-09-15', phone: '+5566778899', email: 'zahid@gmail.com' },
 ];
 
 const statusColors = {

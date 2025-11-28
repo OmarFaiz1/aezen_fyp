@@ -6,14 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MessageSquare, Eye } from "lucide-react";
 import { motion } from "framer-motion";
-
-// todo: remove mock functionality
-const mockTickets = [
-  { id: 'TK001', title: 'Order not received', priority: 'high', assignee: 'John Smith', status: 'open', createdAt: '2023-09-01' },
-  { id: 'TK002', title: 'Refund request', priority: 'medium', assignee: 'Jane Doe', status: 'in-progress', createdAt: '2023-09-02' },
-  { id: 'TK003', title: 'Product defect', priority: 'critical', assignee: 'Mike Johnson', status: 'open', createdAt: '2023-09-03' },
-  { id: 'TK004', title: 'Billing inquiry', priority: 'low', assignee: 'Sarah Wilson', status: 'resolved', createdAt: '2023-09-04' },
-];
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 const priorityColors = {
   low: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
@@ -30,20 +24,33 @@ const statusColors = {
 
 interface TicketTableProps {
   onViewTicket?: (id: string) => void;
-  onChatWithTicket?: (id: string) => void;
+  onChatWithTicket?: (conversationId: string) => void;
+  endpoint?: string;
+  title?: string;
 }
 
-export function TicketTable({ onViewTicket, onChatWithTicket }: TicketTableProps) {
+export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/api/tickets", title = "Support Tickets" }: TicketTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
 
-  const filteredTickets = mockTickets.filter(ticket =>
-    (ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     ticket.id.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (statusFilter === "all" || ticket.status === statusFilter) &&
-    (priorityFilter === "all" || ticket.priority === priorityFilter)
-  );
+  // ...
+
+  const { data: tickets = [] } = useQuery<any[]>({
+    queryKey: [endpoint, statusFilter, priorityFilter, searchTerm],
+    queryFn: async () => {
+      console.log(`[TicketTable] Fetching tickets from ${endpoint}`, { statusFilter, priorityFilter, searchTerm });
+      const params = new URLSearchParams();
+      if (statusFilter !== "all") params.append("status", statusFilter);
+      if (priorityFilter !== "all") params.append("priority", priorityFilter);
+      if (searchTerm) params.append("search", searchTerm);
+
+      const res = await apiRequest("GET", `${endpoint}?${params.toString()}`);
+      const data = await res.json();
+      console.log(`[TicketTable] Fetched ${data.length} tickets`);
+      return data;
+    },
+  });
 
   return (
     <motion.div
@@ -53,7 +60,7 @@ export function TicketTable({ onViewTicket, onChatWithTicket }: TicketTableProps
     >
       <Card data-testid="card-ticket-table">
         <CardHeader>
-          <CardTitle>Support Tickets</CardTitle>
+          <CardTitle>{title}</CardTitle>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -92,55 +99,61 @@ export function TicketTable({ onViewTicket, onChatWithTicket }: TicketTableProps
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {filteredTickets.map((ticket) => (
-              <motion.div
-                key={ticket.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center justify-between p-3 border rounded-lg hover-elevate"
-                data-testid={`ticket-row-${ticket.id}`}
-              >
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="font-mono text-sm">{ticket.id}</div>
-                  <div className="flex-1">
-                    <p className="font-medium">{ticket.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Assigned to {ticket.assignee} • {new Date(ticket.createdAt).toLocaleDateString()}
-                    </p>
+            {tickets.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">No tickets found</p>
+            ) : (
+              tickets.map((ticket) => (
+                <motion.div
+                  key={ticket.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center justify-between p-3 border rounded-lg hover-elevate"
+                  data-testid={`ticket-row-${ticket.id}`}
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="font-mono text-sm w-16">{ticket.ticketNumber}</div>
+                    <div className="flex-1">
+                      <p className="font-medium">{ticket.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Assigned to {ticket.assignedTo?.name || "Unassigned"} • {new Date(ticket.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Badge
+                      variant="secondary"
+                      className={priorityColors[ticket.priority as keyof typeof priorityColors]}
+                    >
+                      {ticket.priority}
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className={statusColors[ticket.status as keyof typeof statusColors]}
+                    >
+                      {ticket.status}
+                    </Badge>
                   </div>
-                  <Badge 
-                    variant="secondary"
-                    className={priorityColors[ticket.priority as keyof typeof priorityColors]}
-                  >
-                    {ticket.priority}
-                  </Badge>
-                  <Badge 
-                    variant="secondary"
-                    className={statusColors[ticket.status as keyof typeof statusColors]}
-                  >
-                    {ticket.status}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onChatWithTicket?.(ticket.id)}
-                    data-testid={`button-chat-${ticket.id}`}
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onViewTicket?.(ticket.id)}
-                    data-testid={`button-view-${ticket.id}`}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
+                  <div className="flex items-center gap-2">
+                    {ticket.conversationId && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onChatWithTicket?.(ticket.conversationId)}
+                        data-testid={`button-chat-${ticket.id}`}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onViewTicket?.(ticket.id)}
+                      data-testid={`button-view-${ticket.id}`}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

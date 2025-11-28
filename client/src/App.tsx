@@ -17,6 +17,7 @@ import BotBuilderPage from "@/pages/bot-builder";
 import Integrations from "@/pages/integrations";
 import Conversations from "@/pages/conversations";
 import Ticketing from "@/pages/ticketing";
+import MyTickets from "@/pages/my-tickets";
 import CRM from "@/pages/crm";
 import TeamManagement from "@/pages/team-management";
 import VoiceCalls from "@/pages/voice-calls";
@@ -25,73 +26,53 @@ import Billing from "@/pages/billing";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
-function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/knowledge-base" component={KnowledgeBase} />
-      <Route path="/bot-builder" component={BotBuilderPage} />
-      <Route path="/integrations" component={Integrations} />
-      <Route path="/conversations" component={Conversations} />
-      <Route path="/ticketing" component={Ticketing} />
-      <Route path="/crm" component={CRM} />
-      <Route path="/team" component={TeamManagement} />
-      <Route path="/voice-calls" component={VoiceCalls} />
-      <Route path="/analytics" component={Analytics} />
-      <Route path="/billing" component={Billing} />
-      <Route path="/settings" component={Settings} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
+import AuthPage from "@/pages/auth-page";
+import { ProtectedRoute } from "@/lib/protected-route";
+
+import Layout from "@/components/layout";
 
 function App() {
-  const style = {
-    "--sidebar-width": "20rem",
-    "--sidebar-width-icon": "4rem",
-  };
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SidebarProvider style={style as React.CSSProperties}>
-          <div className="flex h-screen w-full">
-            <AppSidebar />
-            <div className="flex flex-col flex-1">
-              <header className="flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="flex items-center gap-4">
-                  <SidebarTrigger data-testid="button-sidebar-toggle" />
-                  <div className="relative w-64">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search..."
-                      className="pl-10"
-                      data-testid="input-global-search"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" data-testid="button-notifications">
-                    <Bell className="h-4 w-4" />
-                  </Button>
-                  <ThemeToggle />
-                  <div className="flex items-center gap-2 ml-2">
-                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                      AD
-                    </div>
-                    <span className="text-sm font-medium">Admin</span>
-                  </div>
-                </div>
-              </header>
-              <main className="flex-1 overflow-auto">
-                <Router />
-              </main>
-            </div>
-          </div>
-        </SidebarProvider>
+        <Router />
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
+  );
+}
+
+// Update Router to wrap protected routes in Layout
+function Router() {
+  return (
+    <Switch>
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/" component={AuthPage} />
+
+      {/* Protected Routes wrapped in Layout */}
+      <Route path="/:rest*">
+        {(params) => (
+          <Layout>
+            <Switch>
+              <ProtectedRoute path="/dashboard" component={Dashboard} />
+              <ProtectedRoute path="/knowledge-base" component={KnowledgeBase} />
+              <ProtectedRoute path="/bot-builder" component={BotBuilderPage} />
+              <ProtectedRoute path="/integrations" component={Integrations} />
+              <ProtectedRoute path="/conversations" component={Conversations} />
+              <ProtectedRoute path="/ticketing" component={Ticketing} />
+              <ProtectedRoute path="/my-tickets" component={MyTickets} permission="my-tickets" />
+              <ProtectedRoute path="/crm" component={CRM} />
+              <ProtectedRoute path="/team" component={TeamManagement} />
+              <ProtectedRoute path="/voice-calls" component={VoiceCalls} />
+              <ProtectedRoute path="/analytics" component={Analytics} />
+              <ProtectedRoute path="/billing" component={Billing} />
+              <ProtectedRoute path="/settings" component={Settings} />
+              <Route component={NotFound} />
+            </Switch>
+          </Layout>
+        )}
+      </Route>
+    </Switch>
   );
 }
 

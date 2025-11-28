@@ -11,9 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 // todo: remove mock functionality
 const mockTeamMembers = [
   { id: '22L-7492', name: 'Alina Baber', role: 'Admin', email: 'alina@aezen.com', phone: '+1234567890', status: 'active', permissions: ['analytics', 'user_management', 'billing'] },
-  { id: '22L-7493', name: 'John Smith', role: 'Agent', email: 'john@aezen.com', phone: '+1234567891', status: 'active', permissions: ['conversations', 'tickets'] },
-  { id: '22L-7494', name: 'Sarah Wilson', role: 'Manager', email: 'sarah@aezen.com', phone: '+1234567892', status: 'inactive', permissions: ['analytics', 'team_management'] },
-  { id: '22L-7495', name: 'Mike Johnson', role: 'Agent', email: 'mike@aezen.com', phone: '+1234567893', status: 'active', permissions: ['conversations', 'knowledge_base'] },
+  { id: '22L-7493', name: 'Ali Akhtar', role: 'Agent', email: 'Ali@aezen.com', phone: '+1234567891', status: 'active', permissions: ['conversations', 'tickets'] },
+  { id: '22L-7494', name: 'Sarah', role: 'Manager', email: 'sarah@aezen.com', phone: '+1234567892', status: 'inactive', permissions: ['analytics', 'team_management'] },
+  { id: '22L-7495', name: 'Sharjeel', role: 'Agent', email: 'Sarah@aezen.com', phone: '+1234567893', status: 'active', permissions: ['conversations', 'knowledge_base'] },
 ];
 
 const roleColors = {

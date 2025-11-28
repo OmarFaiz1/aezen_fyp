@@ -1,0 +1,55 @@
+Project Structure:
+
+├── admin
+│   ├── admin-tenant.controller.ts
+│   ├── admin-user.controller.ts
+│   └── admin.module.ts
+├── app.controller.spec.ts
+├── app.controller.ts
+├── app.module.ts
+├── app.service.ts
+├── auth
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   ├── auth.service.ts
+│   ├── jwt-auth.guard.ts
+│   ├── jwt.strategy.ts
+│   ├── roles.decorator.ts
+│   └── roles.guard.ts
+├── chat
+│   ├── chat.gateway.ts
+│   ├── chat.module.ts
+│   ├── chat.service.ts
+│   ├── conversation.entity.ts
+│   ├── message.entity.ts
+│   ├── rag.service.ts
+│   └── ws-jwt.guard.ts
+├── database
+│   └── database.module.ts
+├── main.ts
+├── printProjectStructure.cjs
+├── team
+│   ├── team.controller.ts
+│   ├── team.module.ts
+│   └── team.service.ts
+├── tenant
+│   ├── tenant-config.service.ts
+│   ├── tenant-db-manager.service.ts
+│   ├── tenant.entity.ts
+│   ├── tenant.module.ts
+│   ├── tenant.providers.ts
+│   └── tenant.utils.ts
+├── users
+│   ├── dto
+│   │   └── create-user.dto.ts
+│   ├── user.entity.ts
+│   ├── users.module.ts
+│   └── users.service.ts
+└── whatsapp
+    ├── dtos
+    │   ├── create-message.dto.ts
+    │   └── send-image.dto.ts
+    ├── whatsapp.controller.ts
+    ├── whatsapp.gateway.ts
+    ├── whatsapp.module.ts
+    └── whatsapp.service.ts

@@ -1,30 +1,25 @@
 import { TicketTable } from "@/components/ticket-table";
 import { motion } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
+import { useState } from "react";
+import { TicketDetailsDialog } from "@/components/ticket-details-dialog";
 
 export default function Ticketing() {
-  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const handleViewTicket = (id: string) => {
-    // todo: remove mock functionality
-    console.log("View ticket:", id);
-    toast({
-      title: "Ticket Details",
-      description: `Opening details for ticket ${id}`,
-    });
+    setSelectedTicketId(id);
+    setDetailsOpen(true);
   };
 
-  const handleChatWithTicket = (id: string) => {
-    // todo: remove mock functionality
-    console.log("Chat with ticket:", id);
-    toast({
-      title: "Ticket Chat",
-      description: `Opening chat view for ticket ${id}`,
-    });
+  const handleChatWithTicket = (conversationId: string) => {
+    setLocation(`/conversations?id=${conversationId}`);
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-6 p-6"
@@ -34,9 +29,15 @@ export default function Ticketing() {
         <p className="text-muted-foreground">Manage support tickets with priority-based workflow and team assignment.</p>
       </div>
 
-      <TicketTable 
+      <TicketTable
         onViewTicket={handleViewTicket}
         onChatWithTicket={handleChatWithTicket}
+      />
+
+      <TicketDetailsDialog
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        ticketId={selectedTicketId}
       />
     </motion.div>
   );

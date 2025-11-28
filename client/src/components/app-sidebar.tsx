@@ -1,14 +1,14 @@
-import { 
-  BarChart3, 
-  Bot, 
-  CreditCard, 
-  Database, 
-  FileText, 
-  MessageSquare, 
-  Phone, 
-  Settings, 
-  Ticket, 
-  Users, 
+import {
+  BarChart3,
+  Bot,
+  CreditCard,
+  Database,
+  FileText,
+  MessageSquare,
+  Phone,
+  Settings,
+  Ticket,
+  Users,
   Zap,
   LayoutDashboard,
   MessageCircle,
@@ -55,6 +55,12 @@ const menuItems = [
     icon: MessageSquare,
   },
   {
+    title: "My Tickets",
+    url: "/my-tickets",
+    icon: Ticket,
+    badge: 0, // todo: fetch real count
+  },
+  {
     title: "Ticketing",
     url: "/ticketing",
     icon: Ticket,
@@ -93,6 +99,31 @@ const menuItems = [
 
 export function AppSidebar() {
   const [location] = useLocation();
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? JSON.parse(userStr) : null;
+  const permissions = user?.permissions || [];
+  const role = user?.role;
+
+  // Owner has access to everything
+  const hasPermission = (itemUrl: string) => {
+    if (role === 'Owner') return true;
+    if (itemUrl === '/dashboard') return permissions.includes('dashboard');
+    // Extract feature name from URL (e.g., /conversations -> conversations)
+    const feature = itemUrl.substring(1);
+    return permissions.includes(feature);
+  };
+
+  const filteredItems = menuItems.filter(item => {
+    // Dashboard is usually accessible to everyone, but we can check permission if needed
+    if (item.url === '/') return true; // Keep the root link but redirect it? No, fix the URL.
+    return hasPermission(item.url);
+  });
+
+  // Fix Dashboard URL in menuItems
+  const correctedMenuItems = menuItems.map(item => ({
+    ...item,
+    url: item.url === '/' ? '/dashboard' : item.url
+  })).filter(item => hasPermission(item.url));
 
   return (
     <Sidebar>
@@ -112,9 +143,9 @@ export function AppSidebar() {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {correctedMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     asChild
                     isActive={location === item.url}
                     data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
