@@ -1,26 +1,26 @@
-import { Injectable, Scope, Inject, OnModuleDestroy } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { TenantConfigService } from './tenant-config.service';
 import { createTenantDataSource } from './tenant.utils';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class TenantDbManagerService implements OnModuleDestroy {
-    private dataSource: DataSource;
+    private dataSources: Map<string, DataSource> = new Map();
 
     constructor(
-        @Inject(REQUEST) private request: any,
         private tenantConfigService: TenantConfigService,
     ) { }
 
-    async getDataSource(): Promise<DataSource> {
-        if (this.dataSource) {
-            return this.dataSource;
+    async getDataSource(tenantId: string): Promise<DataSource> {
+        if (!tenantId) {
+            throw new Error('Tenant ID is required');
         }
 
-        const tenantId = this.request.user?.tenantId;
-        if (!tenantId) {
-            throw new Error('Tenant ID not found in request');
+        if (this.dataSources.has(tenantId)) {
+            const ds = this.dataSources.get(tenantId);
+            if (ds && ds.isInitialized) {
+                return ds;
+            }
         }
 
         const tenant = await this.tenantConfigService.getDbConfig(tenantId);
@@ -28,13 +28,17 @@ export class TenantDbManagerService implements OnModuleDestroy {
             throw new Error('Tenant configuration not found');
         }
 
-        this.dataSource = await createTenantDataSource(tenant);
-        return this.dataSource;
+        const dataSource = await createTenantDataSource(tenant);
+        this.dataSources.set(tenantId, dataSource);
+        return dataSource;
     }
 
     async onModuleDestroy() {
-        if (this.dataSource && this.dataSource.isInitialized) {
-            await this.dataSource.destroy();
+        for (const dataSource of this.dataSources.values()) {
+            if (dataSource.isInitialized) {
+                await dataSource.destroy();
+            }
         }
+        this.dataSources.clear();
     }
 }

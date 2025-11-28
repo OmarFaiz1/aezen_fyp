@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query, Request } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TicketPriority, TicketStatus } from './ticket.entity';
@@ -16,8 +16,8 @@ export class TicketController {
         status: TicketStatus;
         conversationId?: string;
         assignedToId?: string;
-    }) {
-        return this.ticketService.createTicket(createTicketDto);
+    }, @Request() req) {
+        return this.ticketService.createTicket(req.user.tenantId, req.user.userId, createTicketDto);
     }
 
     @Get()
@@ -25,9 +25,10 @@ export class TicketController {
         @Query('status') status?: TicketStatus,
         @Query('priority') priority?: TicketPriority,
         @Query('search') search?: string,
+        @Request() req?: any
     ) {
         console.log('[TicketController] GET /tickets called');
-        return this.ticketService.getTickets({ status, priority, search });
+        return this.ticketService.getTickets(req.user.tenantId, { status, priority, search });
     }
 
     @Get('my')
@@ -35,18 +36,19 @@ export class TicketController {
         @Query('status') status?: TicketStatus,
         @Query('priority') priority?: TicketPriority,
         @Query('search') search?: string,
+        @Request() req?: any
     ) {
         console.log('[TicketController] GET /tickets/my called');
-        return this.ticketService.getMyTickets({ status, priority, search });
+        return this.ticketService.getMyTickets(req.user.tenantId, req.user.userId, { status, priority, search });
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.ticketService.getTicket(id);
+    findOne(@Param('id') id: string, @Request() req) {
+        return this.ticketService.getTicket(req.user.tenantId, id);
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateTicketDto: any) {
-        return this.ticketService.updateTicket(id, updateTicketDto);
+    update(@Param('id') id: string, @Body() updateTicketDto: any, @Request() req) {
+        return this.ticketService.updateTicket(req.user.tenantId, id, updateTicketDto);
     }
 }

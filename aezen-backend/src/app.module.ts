@@ -11,6 +11,7 @@ import { AdminModule } from './admin/admin.module';
 import { TeamModule } from './team/team.module';
 import { WhatsAppModule } from './whatsapp/whatsapp.module';
 import { TicketModule } from './ticket/ticket.module';
+import { WebChatModule } from './webchat/webchat.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TicketModule } from './ticket/ticket.module';
     TeamModule,
     WhatsAppModule,
     TicketModule,
+    WebChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -24,7 +24,7 @@ export class WsJwtGuard implements CanActivate {
 
         try {
             const payload = this.jwtService.verify(token, {
-                secret: this.configService.get<string>('JWT_SECRET', 'dev_secret'),
+                secret: this.configService.get<string>('JWT_SECRET', 'secret'),
             });
             // Attach user to socket object so it can be accessed in the gateway
             client.data.user = payload;
@@ -38,6 +38,10 @@ export class WsJwtGuard implements CanActivate {
         const authHeader = client.handshake.headers.authorization;
         if (authHeader && authHeader.split(' ')[0] === 'Bearer') {
             return authHeader.split(' ')[1];
+        }
+        const authToken = client.handshake.auth?.token;
+        if (authToken) {
+            return authToken;
         }
         const queryToken = client.handshake.query.token;
         if (typeof queryToken === 'string') {

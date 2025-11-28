@@ -43,10 +43,13 @@ function App() {
 }
 
 // Update Router to wrap protected routes in Layout
+import WebChat from "@/pages/webchat";
+
 function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
+      <Route path="/webchat/:tenantId" component={WebChat} />
       <Route path="/" component={AuthPage} />
 
       {/* Protected Routes wrapped in Layout */}

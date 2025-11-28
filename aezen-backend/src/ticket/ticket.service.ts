@@ -1,23 +1,21 @@
-import { Injectable, Inject, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
+import { Injectable } from '@nestjs/common';
 import { TenantDbManagerService } from '../tenant/tenant-db-manager.service';
 import { Ticket, TicketPriority, TicketStatus } from './ticket.entity';
 import { UsersService } from '../users/users.service';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class TicketService {
     constructor(
-        @Inject(REQUEST) private request: any,
         private tenantDbManager: TenantDbManagerService,
         private usersService: UsersService,
     ) { }
 
-    private async getRepository() {
-        const dataSource = await this.tenantDbManager.getDataSource();
+    private async getRepository(tenantId: string) {
+        const dataSource = await this.tenantDbManager.getDataSource(tenantId);
         return dataSource.getRepository(Ticket);
     }
 
-    async createTicket(data: {
+    async createTicket(tenantId: string, userId: string, data: {
         title: string;
         description?: string;
         priority: TicketPriority;
@@ -25,9 +23,7 @@ export class TicketService {
         conversationId?: string;
         assignedToId?: string;
     }) {
-        const repo = await this.getRepository();
-        const tenantId = this.request.user.tenantId;
-        const userId = this.request.user.userId;
+        const repo = await this.getRepository(tenantId);
 
         // Generate Ticket Number (TK###)
         // We need to find the last ticket number for this tenant
@@ -57,9 +53,8 @@ export class TicketService {
         return repo.save(ticket);
     }
 
-    async getTickets(filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string }) {
-        const repo = await this.getRepository();
-        const tenantId = this.request.user.tenantId;
+    async getTickets(tenantId: string, filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string }) {
+        const repo = await this.getRepository(tenantId);
         console.log(`[TicketService] getTickets called for tenantId: ${tenantId}`);
 
         const query = repo.createQueryBuilder('ticket')
@@ -84,15 +79,13 @@ export class TicketService {
 
         // Enrich with user details manually since they are in a different DB
         console.log(`[TicketService] Found ${tickets.length} tickets for tenant ${tenantId}`);
-        const enriched = await this.enrichTicketsWithUsers(tickets);
+        const enriched = await this.enrichTicketsWithUsers(tenantId, tickets);
         console.log(`[TicketService] Enriched tickets:`, enriched);
         return enriched;
     }
 
-    async getMyTickets(filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string }) {
-        const repo = await this.getRepository();
-        const tenantId = this.request.user.tenantId;
-        const userId = this.request.user.userId;
+    async getMyTickets(tenantId: string, userId: string, filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string }) {
+        const repo = await this.getRepository(tenantId);
         console.log(`[TicketService] getMyTickets called for tenantId: ${tenantId}, userId: ${userId}`);
 
         const query = repo.createQueryBuilder('ticket')
@@ -116,11 +109,11 @@ export class TicketService {
 
         const tickets = await query.getMany();
         console.log(`[TicketService] Found ${tickets.length} my tickets for user ${userId}`);
-        return this.enrichTicketsWithUsers(tickets);
+        return this.enrichTicketsWithUsers(tenantId, tickets);
     }
 
-    async updateTicket(id: string, data: Partial<Ticket>) {
-        const repo = await this.getRepository();
+    async updateTicket(tenantId: string, id: string, data: Partial<Ticket>) {
+        const repo = await this.getRepository(tenantId);
         const ticket = await repo.findOne({ where: { id } });
 
         if (!ticket) {
@@ -131,17 +124,17 @@ export class TicketService {
         return repo.save(ticket);
     }
 
-    async getTicket(id: string) {
-        const repo = await this.getRepository();
+    async getTicket(tenantId: string, id: string) {
+        const repo = await this.getRepository(tenantId);
         const ticket = await repo.findOne({ where: { id }, relations: ['conversation'] });
         if (!ticket) return null;
 
-        const enriched = await this.enrichTicketsWithUsers([ticket]);
+        const enriched = await this.enrichTicketsWithUsers(tenantId, [ticket]);
         return enriched[0];
     }
 
-    async getTicketByConversationId(conversationId: string) {
-        const repo = await this.getRepository();
+    async getTicketByConversationId(tenantId: string, conversationId: string) {
+        const repo = await this.getRepository(tenantId);
         // Find the latest open or in-progress ticket for this conversation
         const ticket = await repo.findOne({
             where: { conversationId },
@@ -150,7 +143,7 @@ export class TicketService {
         return ticket;
     }
 
-    private async enrichTicketsWithUsers(tickets: Ticket[]) {
+    private async enrichTicketsWithUsers(tenantId: string, tickets: Ticket[]) {
         if (!tickets.length) return [];
 
         // Collect all user IDs
@@ -162,7 +155,6 @@ export class TicketService {
 
         if (userIds.size === 0) return tickets;
 
-        const tenantId = this.request.user.tenantId;
         console.log(`[TicketService] Enriching tickets for tenant ${tenantId}. User IDs:`, Array.from(userIds));
 
         try {

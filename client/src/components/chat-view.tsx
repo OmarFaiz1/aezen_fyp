@@ -98,7 +98,11 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   }, [messages]);
 
   const send = () => {
-    if (message.trim()) sendMutation.mutate(message.trim());
+    if (message.trim()) {
+      const text = message.trim();
+      setMessage(""); // Optimistic clear
+      sendMutation.mutate(text);
+    }
   };
 
   const isWhatsApp = conversation?.platform === 'whatsapp';

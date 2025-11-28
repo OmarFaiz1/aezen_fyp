@@ -85,3 +85,36 @@ export const getSocket = (): Socket => {
 
   return socket as Socket;
 };
+
+let guestSocket: Socket | null = null;
+
+export const getGuestSocket = (token: string): Socket => {
+  if (!guestSocket) {
+    const url = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+    console.log("Connecting Guest Socket.IO to:", url);
+
+    guestSocket = io(url, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      autoConnect: true,
+      withCredentials: true,
+      auth: {
+        token: token,
+      },
+    });
+
+    guestSocket.on("connect", () => {
+      console.log("Guest Socket CONNECTED → ID:", guestSocket!.id);
+      guestSocket!.emit("join");
+    });
+
+    guestSocket.on("disconnect", (reason) => {
+      console.log("Guest Socket DISCONNECTED", reason);
+    });
+
+    guestSocket.on("connect_error", (err) => {
+      console.error("Guest Socket connect error:", err?.message ?? err);
+    });
+  }
+  return guestSocket as Socket;
+};
