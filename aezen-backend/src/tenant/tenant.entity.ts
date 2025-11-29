@@ -27,6 +27,9 @@ export class Tenant {
   @Column()
   kbPointer: string; // Identifier for the isolated RAG index
 
+  @Column({ default: true })
+  aiTicketingEnabled: boolean;
+
   @OneToMany(() => User, (user) => user.tenant)
   users: User[];
 }

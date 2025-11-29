@@ -160,3 +160,8 @@ async def get_status(tenant_id: str):
         }
     except Exception as e:
         return {"items": [], "error": str(e)}
+from modules.ticket_classifier import analyze_ticket, TicketAnalysisRequest
+
+@app.post("/analyze-ticket")
+async def analyze_ticket_endpoint(request: TicketAnalysisRequest):
+    return analyze_ticket(request.message, request.triggers)

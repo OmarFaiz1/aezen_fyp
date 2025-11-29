@@ -7,6 +7,7 @@ import { TenantConfigService } from '../tenant/tenant-config.service';
 import { TenantDbManagerService } from '../tenant/tenant-db-manager.service';
 
 import { TicketService } from '../ticket/ticket.service';
+import { AiTicketService } from '../ai-ticket/ai-ticket.service';
 
 @Injectable()
 export class ChatService {
@@ -15,6 +16,7 @@ export class ChatService {
         private kbService: KbIntegrationService,
         private tenantConfigService: TenantConfigService,
         private ticketService: TicketService,
+        private aiTicketService: AiTicketService,
     ) { }
 
     private async getRepositories(tenantId: string) {
@@ -93,7 +95,34 @@ export class ChatService {
         conversation.lastMessage = messageContent;
         await conversationRepo.save(conversation);
 
-        // 4. Call KB Service
+        // 4. Check for AI Ticket Triggers FIRST
+        try {
+            const aiTicket = await this.aiTicketService.checkAndCreateTicket(tenantId, userId, messageContent, conversation.id);
+            if (aiTicket) {
+                const replyText = "We have created a ticket for your request. Our agent will get back to you shortly.";
+
+                // Save AI Response
+                const aiMessage = messageRepo.create({
+                    sender: 'ai',
+                    content: replyText,
+                    conversationId: conversation.id,
+                    createdAt: new Date(),
+                    type: 'text'
+                });
+                await messageRepo.save(aiMessage);
+
+                // Update conversation
+                conversation.lastMessage = replyText;
+                conversation.lastMessageAt = new Date();
+                await conversationRepo.save(conversation);
+
+                return replyText;
+            }
+        } catch (err) {
+            console.error('[ChatService] Error checking AI ticket:', err);
+        }
+
+        // 5. Call KB Service
         try {
             // Use tenantId directly as the identifier for KB
             const result = await this.kbService.queryBot(tenantId, userId, messageContent);
@@ -109,7 +138,7 @@ export class ChatService {
                 if (response === "Sorry, I'm having trouble connecting to my brain right now.") return '';
             }
 
-            // 5. Save AI Response
+            // 6. Save AI Response
             const aiMessage = messageRepo.create({
                 sender: 'ai',
                 content: response,

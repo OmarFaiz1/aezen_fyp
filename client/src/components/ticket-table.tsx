@@ -44,17 +44,19 @@ export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/ticke
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [assignedByTypeFilter, setAssignedByTypeFilter] = useState("all");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const { data: tickets = [] } = useQuery<any[]>({
-    queryKey: [endpoint, statusFilter, priorityFilter, searchTerm],
+    queryKey: [endpoint, statusFilter, priorityFilter, searchTerm, assignedByTypeFilter],
     queryFn: async () => {
-      console.log(`[TicketTable] Fetching tickets from ${endpoint}`, { statusFilter, priorityFilter, searchTerm });
+      console.log(`[TicketTable] Fetching tickets from ${endpoint}`, { statusFilter, priorityFilter, searchTerm, assignedByTypeFilter });
       const params = new URLSearchParams();
       if (statusFilter !== "all") params.append("status", statusFilter);
       if (priorityFilter !== "all") params.append("priority", priorityFilter);
+      if (assignedByTypeFilter !== "all") params.append("assignedByType", assignedByTypeFilter);
       if (searchTerm) params.append("search", searchTerm);
 
       const res = await apiRequest("GET", `${endpoint}?${params.toString()}`);
@@ -126,6 +128,16 @@ export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/ticke
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>
                 <SelectItem value="critical">Critical</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={assignedByTypeFilter} onValueChange={setAssignedByTypeFilter}>
+              <SelectTrigger className="w-40" data-testid="select-assigned-filter">
+                <SelectValue placeholder="Assigned By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                <SelectItem value="ai">🤖 AI</SelectItem>
+                <SelectItem value="human">👤 Human</SelectItem>
               </SelectContent>
             </Select>
           </div>

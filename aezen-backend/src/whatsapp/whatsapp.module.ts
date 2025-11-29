@@ -7,12 +7,14 @@ import { Conversation } from '../chat/conversation.entity';
 import { Message } from '../chat/message.entity';
 import { AuthModule } from '../auth/auth.module';
 import { KbIntegrationModule } from '../kb-integration/kb-integration.module';
+import { AiTicketModule } from '../ai-ticket/ai-ticket.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Conversation, Message]),
         AuthModule,
         KbIntegrationModule,
+        AiTicketModule,
     ],
     controllers: [WhatsAppController],
     providers: [WhatsAppService, WhatsAppGateway],

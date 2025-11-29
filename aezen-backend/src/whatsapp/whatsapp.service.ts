@@ -8,6 +8,7 @@ import { SendImageDto } from './dtos/send-image.dto';
 import { TenantConnectionManager } from '../tenant/tenant-connection.manager';
 import { KbIntegrationService } from '../kb-integration/kb-integration.service';
 import { TenantConfigService } from '../tenant/tenant-config.service';
+import { AiTicketService } from '../ai-ticket/ai-ticket.service';
 
 // Baileys imports
 import {
@@ -43,6 +44,7 @@ export class WhatsAppService implements OnModuleInit {
         private readonly connectionManager: TenantConnectionManager,
         private readonly kbService: KbIntegrationService,
         private readonly tenantConfigService: TenantConfigService,
+        private readonly aiTicketService: AiTicketService,
     ) { }
 
     async onModuleInit() {
@@ -384,6 +386,39 @@ export class WhatsAppService implements OnModuleInit {
 
             // --- BOT AUTO-REPLY LOGIC ---
             if (type === 'text') {
+                // 1. Check for AI Ticket Triggers FIRST
+                const aiTicket = await this.aiTicketService.checkAndCreateTicket(tenantId, contactNumber, content, conversation.id);
+
+                if (aiTicket) {
+                    // AI Ticket created! Send specific auto-reply and SKIP KB.
+                    const replyText = "We have created a ticket for your request. Our agent will get back to you shortly.";
+
+                    const clientObj = this.clients.get(tenantId);
+                    if (clientObj && clientObj.sock) {
+                        await clientObj.sock.sendMessage(jid, { text: replyText });
+
+                        // Save Agent message
+                        const agentMessage = messageRepo.create({
+                            conversationId: conversation.id,
+                            sender: 'agent', // or 'ai'
+                            content: replyText,
+                            type: 'text',
+                            createdAt: new Date(),
+                            isRead: true
+                        });
+                        await messageRepo.save(agentMessage);
+
+                        // Update conversation
+                        conversation.lastMessage = replyText;
+                        conversation.lastMessageAt = new Date();
+                        await conversationRepo.save(conversation);
+
+                        // Emit to frontend
+                        this.gateway.emitMemberMessage(tenantId, agentMessage);
+                    }
+                    return; // EXIT HERE - Do not query KB
+                }
+
                 try {
                     // Check if bot is enabled for this tenant
                     const tenantConfig = await this.tenantConfigService.getDbConfig(tenantId);

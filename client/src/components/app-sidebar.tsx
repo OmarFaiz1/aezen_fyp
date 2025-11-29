@@ -81,6 +81,11 @@ const menuItems = [
     icon: Users,
   },
   {
+    title: "AI Ticket Management",
+    url: "/ai-tickets",
+    icon: Bot,
+  },
+  {
     title: "Voice Calls",
     url: "/voice-calls",
     icon: Phone,

@@ -64,9 +64,9 @@ export class TicketService {
         return repo.remove(ticket);
     }
 
-    async getTickets(tenantId: string, filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string }) {
+    async getTickets(tenantId: string, filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string; assignedByType?: 'ai' | 'human' | 'all' }) {
         const repo = await this.getRepository(tenantId);
-        console.log(`[TicketService] getTickets called for tenantId: ${tenantId}`);
+        console.log(`[TicketService] getTickets called for tenantId: ${tenantId}, filters: ${JSON.stringify(filters)}`);
 
         const query = repo.createQueryBuilder('ticket')
             .where('ticket.tenantId = :tenantId', { tenantId })
@@ -80,24 +80,32 @@ export class TicketService {
             query.andWhere('ticket.priority = :priority', { priority: filters.priority });
         }
 
+        if (filters?.assignedByType && filters.assignedByType !== 'all' as any) {
+            console.log(`[TicketService] Applying assignedByType filter: ${filters.assignedByType}`);
+            query.andWhere('ticket.assignedByType = :assignedByType', { assignedByType: filters.assignedByType });
+        }
+
         if (filters?.search) {
             query.andWhere('(ticket.title ILIKE :search OR ticket.ticketNumber ILIKE :search)', { search: `%${filters.search}%` });
         }
 
         query.orderBy('ticket.createdAt', 'DESC');
 
+        console.log(`[TicketService] Generated SQL: ${query.getSql()}`);
+        console.log(`[TicketService] Parameters: ${JSON.stringify(query.getParameters())}`);
+
         const tickets = await query.getMany();
 
         // Enrich with user details manually since they are in a different DB
         console.log(`[TicketService] Found ${tickets.length} tickets for tenant ${tenantId}`);
         const enriched = await this.enrichTicketsWithUsers(tenantId, tickets);
-        console.log(`[TicketService] Enriched tickets:`, enriched);
+        // console.log(`[TicketService] Enriched tickets:`, enriched);
         return enriched;
     }
 
-    async getMyTickets(tenantId: string, userId: string, filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string }) {
+    async getMyTickets(tenantId: string, userId: string, filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string; assignedByType?: 'ai' | 'human' | 'all' }) {
         const repo = await this.getRepository(tenantId);
-        console.log(`[TicketService] getMyTickets called for tenantId: ${tenantId}, userId: ${userId}`);
+        console.log(`[TicketService] getMyTickets called for tenantId: ${tenantId}, userId: ${userId}, filters: ${JSON.stringify(filters)}`);
 
         const query = repo.createQueryBuilder('ticket')
             .where('ticket.tenantId = :tenantId', { tenantId })
@@ -110,6 +118,10 @@ export class TicketService {
 
         if (filters?.priority && filters.priority !== 'all' as any) {
             query.andWhere('ticket.priority = :priority', { priority: filters.priority });
+        }
+
+        if (filters?.assignedByType && filters.assignedByType !== 'all' as any) {
+            query.andWhere('ticket.assignedByType = :assignedByType', { assignedByType: filters.assignedByType });
         }
 
         if (filters?.search) {

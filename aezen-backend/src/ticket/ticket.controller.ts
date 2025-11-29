@@ -25,10 +25,11 @@ export class TicketController {
         @Query('status') status?: TicketStatus,
         @Query('priority') priority?: TicketPriority,
         @Query('search') search?: string,
+        @Query('assignedByType') assignedByType?: 'ai' | 'human' | 'all',
         @Request() req?: any
     ) {
         console.log('[TicketController] GET /tickets called');
-        return this.ticketService.getTickets(req.user.tenantId, { status, priority, search });
+        return this.ticketService.getTickets(req.user.tenantId, { status, priority, search, assignedByType });
     }
 
     @Get('my')
@@ -36,10 +37,11 @@ export class TicketController {
         @Query('status') status?: TicketStatus,
         @Query('priority') priority?: TicketPriority,
         @Query('search') search?: string,
+        @Query('assignedByType') assignedByType?: 'ai' | 'human' | 'all',
         @Request() req?: any
     ) {
         console.log('[TicketController] GET /tickets/my called');
-        return this.ticketService.getMyTickets(req.user.tenantId, req.user.userId, { status, priority, search });
+        return this.ticketService.getMyTickets(req.user.tenantId, req.user.userId, { status, priority, search, assignedByType });
     }
 
     @Get(':id')

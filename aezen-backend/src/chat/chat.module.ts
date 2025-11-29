@@ -9,6 +9,7 @@ import { TenantModule } from '../tenant/tenant.module';
 import { TicketModule } from '../ticket/ticket.module';
 import { ChatController } from './chat.controller';
 import { KbIntegrationModule } from '../kb-integration/kb-integration.module';
+import { AiTicketModule } from '../ai-ticket/ai-ticket.module';
 
 @Global()
 @Module({
@@ -16,6 +17,7 @@ import { KbIntegrationModule } from '../kb-integration/kb-integration.module';
         TenantModule,
         TicketModule,
         KbIntegrationModule,
+        AiTicketModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],

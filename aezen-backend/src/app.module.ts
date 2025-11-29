@@ -13,6 +13,7 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
 import { TicketModule } from './ticket/ticket.module';
 import { WebChatModule } from './webchat/webchat.module';
 import { KbIntegrationModule } from './kb-integration/kb-integration.module';
+import { AiTicketModule } from './ai-ticket/ai-ticket.module';
 
 @Module({
   imports: [
@@ -27,7 +28,9 @@ import { KbIntegrationModule } from './kb-integration/kb-integration.module';
     WhatsAppModule,
     TicketModule,
     WebChatModule,
+    WebChatModule,
     KbIntegrationModule,
+    AiTicketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

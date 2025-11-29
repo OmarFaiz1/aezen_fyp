@@ -107,4 +107,13 @@ export class TeamService {
 
         return this.userRepository.remove(member);
     }
+
+    async getTenantConfig(tenantId: string) {
+        return this.tenantRepository.findOne({ where: { id: tenantId } });
+    }
+
+    async updateTenantConfig(tenantId: string, updates: Partial<Tenant>) {
+        await this.tenantRepository.update({ id: tenantId }, updates);
+        return this.tenantRepository.findOne({ where: { id: tenantId } });
+    }
 }

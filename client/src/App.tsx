@@ -21,6 +21,7 @@ import MyTickets from "@/pages/my-tickets";
 import CRM from "@/pages/crm";
 import TeamManagement from "@/pages/team-management";
 import SeeMembers from "@/pages/see-members";
+import AiTicketManagement from "@/pages/ai-ticket-management";
 import VoiceCalls from "@/pages/voice-calls";
 import Analytics from "@/pages/analytics";
 import Billing from "@/pages/billing";
@@ -68,6 +69,7 @@ function Router() {
               <ProtectedRoute path="/crm" component={CRM} />
               <ProtectedRoute path="/team" component={TeamManagement} />
               <ProtectedRoute path="/see-members" component={SeeMembers} permission="see-members" />
+              <ProtectedRoute path="/ai-tickets" component={AiTicketManagement} />
               <ProtectedRoute path="/voice-calls" component={VoiceCalls} />
               <ProtectedRoute path="/analytics" component={Analytics} />
               <ProtectedRoute path="/billing" component={Billing} />
