@@ -1,0 +1,42 @@
+[
+    {
+        "query": "Hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:23:30.935838"
+    },
+    {
+        "query": "Who are you",
+        "answer": "I can only answer questions related to the provided knowledge base.",
+        "timestamp": "2025-11-29T11:23:45.692844"
+    },
+    {
+        "query": "Tell me about aezen",
+        "answer": "I can only answer questions related to the provided knowledge base.",
+        "timestamp": "2025-11-29T11:32:18.492133"
+    },
+    {
+        "query": "Hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:36:09.595575"
+    },
+    {
+        "query": "Tell me about fast admission",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T11:36:27.401081"
+    },
+    {
+        "query": "Tell me about aezen",
+        "answer": "AEZEN is a cognitive operating system designed for the autonomous enterprise, aiming to capture a significant share of the $27 billion automation market. It addresses a substantial underserved gap between basic automation and enterprise-grade AI, particularly within the global chatbot and conversational AI market.\n\nAEZEN is built on three revolutionary pillars:\n\n1. **Pillar A: True Multimodal Cognition (Vision & Voice)** - This allows AEZEN to handle complex, domain-specific questions with citation-backed accuracy.\n   \n2. **Pillar B: The \"Empathy Engine\" (Emotion AI)** - Unlike traditional passive bots, AEZEN is emotionally aware. It employs advanced tonal analysis to detect user emotions\u2014such as frustration, anger, confusion, or joy\u2014in real-time.\n\n3. **Pillar C: [Information not provided in the context]**\n\nThe technical architecture of AEZEN is described as \"military-grade,\" indicating it is constructed on a cloud-native stack that ensures high concurrency, fault tolerance, and speed. The overarching goal of AEZEN is to serve as a digital nervous system that enhances productivity and addresses the current economic inefficiencies caused by bottlenecks in productivity.",
+        "timestamp": "2025-11-29T11:36:42.037465"
+    },
+    {
+        "query": "Tell me about cs admission in fast university",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T11:38:53.729228"
+    },
+    {
+        "query": "Tell me about cs admission in fast university",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T11:39:58.687444"
+    }
+]

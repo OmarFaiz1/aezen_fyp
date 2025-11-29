@@ -6,11 +6,13 @@ import { WhatsAppGateway } from './whatsapp.gateway';
 import { Conversation } from '../chat/conversation.entity';
 import { Message } from '../chat/message.entity';
 import { AuthModule } from '../auth/auth.module';
+import { KbIntegrationModule } from '../kb-integration/kb-integration.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Conversation, Message]),
         AuthModule,
+        KbIntegrationModule,
     ],
     controllers: [WhatsAppController],
     providers: [WhatsAppService, WhatsAppGateway],

@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { RAGService } from './rag.service';
+import { KbIntegrationService } from '../kb-integration/kb-integration.service';
 import { Conversation } from './conversation.entity';
 import { Message } from './message.entity';
 import { TenantConfigService } from '../tenant/tenant-config.service';
@@ -12,7 +12,7 @@ import { TicketService } from '../ticket/ticket.service';
 export class ChatService {
     constructor(
         private tenantDbManager: TenantDbManagerService,
-        private ragService: RAGService,
+        private kbService: KbIntegrationService,
         private tenantConfigService: TenantConfigService,
         private ticketService: TicketService,
     ) { }
@@ -93,25 +93,27 @@ export class ChatService {
         conversation.lastMessage = messageContent;
         await conversationRepo.save(conversation);
 
-        // 4. Call RAG Service
+        // 4. Call KB Service
         try {
-            const { response, metadata } = await this.ragService.queryFastAPI(messageContent, tenant.kbPointer);
+            // Use tenantId directly as the identifier for KB
+            const result = await this.kbService.queryBot(tenantId, userId, messageContent);
+            const response = result.answer;
 
-            // Check if response is the error message (or we can update RAGService to throw)
-            // For now, let's just check the content or assume if it returns, it's valid.
-            // But user wants to REMOVE the error message.
-            // So if RAGService returns the error message, we should NOT save it.
-
-            if (response === 'I am having trouble connecting to my knowledge base right now.') {
-                console.warn('RAG Service unavailable, skipping AI response.');
-                return ''; // Return empty string to indicate no response
+            if (!response || response === "Sorry, I'm having trouble connecting to my brain right now.") {
+                console.warn('KB Service unavailable or empty response.');
+                // Optionally return error message or silence
+                // User requested to remove error message? "Member can still reply manually... auto-reply should not block"
+                // If error, we just return empty string so no bot message is saved?
+                // Let's return the error message if it's a connection error so user knows, or just silence it.
+                // The previous code returned empty string on error.
+                if (response === "Sorry, I'm having trouble connecting to my brain right now.") return '';
             }
 
             // 5. Save AI Response
             const aiMessage = messageRepo.create({
                 sender: 'ai',
                 content: response,
-                responseMetadata: metadata,
+                // responseMetadata: metadata, // KB service doesn't return metadata yet in the same format
                 conversationId: conversation.id,
                 createdAt: new Date(),
                 type: 'text'
@@ -120,7 +122,7 @@ export class ChatService {
 
             return response;
         } catch (error) {
-            console.error('RAG Service failed:', error);
+            console.error('KB Service failed:', error);
             return '';
         }
     }

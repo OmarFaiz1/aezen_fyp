@@ -213,9 +213,12 @@ export default function WebChat() {
                             >
                                 <div className={`max-w-[80%] rounded-lg p-3 ${isMe ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                                     <p className="text-sm">{msg.content}</p>
-                                    <span className="text-[10px] opacity-70 block text-right mt-1">
-                                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
+                                    <div className="flex justify-between items-center mt-1">
+                                        {msg.sender === 'ai' && <span className="text-[10px] opacity-70 italic mr-2">(Sent by Bot)</span>}
+                                        <span className="text-[10px] opacity-70 block text-right">
+                                            {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
                                 </div>
                             </motion.div>
                         );

@@ -84,6 +84,9 @@ export class WebChatService {
             createdAt: new Date()
         });
 
+        // Emit Bot Reply to User (Real-time)
+        this.chatGateway.emitToConversation(conversationId, 'chat_response', { message: response });
+
         return { message: response };
     }
 }

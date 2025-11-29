@@ -1,0 +1,42 @@
+[
+    {
+        "query": "hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T06:43:22.355818"
+    },
+    {
+        "query": "hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T07:26:24.655018"
+    },
+    {
+        "query": "fast offer MS  program",
+        "answer": "Sorry, exact information not found in FAST database.",
+        "timestamp": "2025-11-29T07:30:48.852501"
+    },
+    {
+        "query": "what is teh admission criteria",
+        "answer": "Sorry, exact information not found in FAST database.",
+        "timestamp": "2025-11-29T07:32:52.147872"
+    },
+    {
+        "query": "i want to refund my fee",
+        "answer": "Sorry, exact information not found in FAST database.\n\n\ud83d\udfe1 **A support ticket has been generated.**\n**Ticket No:** TKT-657B6B6C\n**Assigned To:** Sana Khan (Refund Specialist)",
+        "timestamp": "2025-11-29T09:02:14.191528"
+    },
+    {
+        "query": "hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T09:36:00.765452"
+    },
+    {
+        "query": "who are u",
+        "answer": "This question is outside FAST University domain.",
+        "timestamp": "2025-11-29T09:36:23.210949"
+    },
+    {
+        "query": "test pattern for cs",
+        "answer": "The test pattern for the Computer Science program (BS - CS) at FAST University is as follows:\n\n| **Section/Topic**        | **BS (CS/Engg.)** |\n|--------------------------|-------------------|\n| **English**              | 10%               |\n| **Analytical Skills & IQ** | 20%              |\n| **Basic Math**          | 20%               |\n| **Adv. Math**           | 50%               |\n| **Essay Writing**       | -                 |\n| **Specialization Area**  | -                 |\n| **Quantitative Methods** | -                 |\n\nPlease note that there will be negative marking and the use of calculators is not allowed in the Admission Test.",
+        "timestamp": "2025-11-29T09:37:41.410128"
+    }
+]

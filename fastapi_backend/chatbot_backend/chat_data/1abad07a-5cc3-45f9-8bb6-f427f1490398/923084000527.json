@@ -1,0 +1,17 @@
+[
+    {
+        "query": "Hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:19:21.536672"
+    },
+    {
+        "query": "Tell me about CSS pattern",
+        "answer": "I can only answer questions related to the provided knowledge base.",
+        "timestamp": "2025-11-29T11:19:34.758706"
+    },
+    {
+        "query": "Who are you",
+        "answer": "I can only answer questions related to the provided knowledge base.",
+        "timestamp": "2025-11-29T11:19:41.448312"
+    }
+]

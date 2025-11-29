@@ -1,0 +1,52 @@
+[
+    {
+        "query": "Tell me about the cs test pattern",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T10:56:14.574058"
+    },
+    {
+        "query": "I can only answer questions related to the provided knowledge base.",
+        "answer": "I can only answer questions related to the provided knowledge base.",
+        "timestamp": "2025-11-29T10:56:17.595906"
+    },
+    {
+        "query": "I can only answer questions related to the provided knowledge base.",
+        "answer": "I can only answer questions related to the provided knowledge base.",
+        "timestamp": "2025-11-29T10:56:19.676310"
+    },
+    {
+        "query": "I can only answer questions related to the provided knowledge base.",
+        "answer": "I can only answer questions related to the provided knowledge base.",
+        "timestamp": "2025-11-29T10:56:22.483268"
+    },
+    {
+        "query": "Tell me about the cs test pattern",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T11:06:40.851938"
+    },
+    {
+        "query": "Hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:07:01.163872"
+    },
+    {
+        "query": "Hello! How can I assist you?",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:07:03.736244"
+    },
+    {
+        "query": "Hello! How can I assist you?",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:07:05.359896"
+    },
+    {
+        "query": "Hello! How can I assist you?",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:07:07.089048"
+    },
+    {
+        "query": "Hello! How can I assist you?",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:07:09.030164"
+    }
+]

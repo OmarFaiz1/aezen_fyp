@@ -12,6 +12,7 @@ import { TeamModule } from './team/team.module';
 import { WhatsAppModule } from './whatsapp/whatsapp.module';
 import { TicketModule } from './ticket/ticket.module';
 import { WebChatModule } from './webchat/webchat.module';
+import { KbIntegrationModule } from './kb-integration/kb-integration.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { WebChatModule } from './webchat/webchat.module';
     WhatsAppModule,
     TicketModule,
     WebChatModule,
+    KbIntegrationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

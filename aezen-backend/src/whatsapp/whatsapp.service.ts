@@ -6,6 +6,8 @@ import { Conversation } from '../chat/conversation.entity';
 import { Message } from '../chat/message.entity';
 import { SendImageDto } from './dtos/send-image.dto';
 import { TenantConnectionManager } from '../tenant/tenant-connection.manager';
+import { KbIntegrationService } from '../kb-integration/kb-integration.service';
+import { TenantConfigService } from '../tenant/tenant-config.service';
 
 // Baileys imports
 import {
@@ -34,10 +36,13 @@ export class WhatsAppService implements OnModuleInit {
     // guard to avoid infinite auto-reset loops
     private resetAttempts: Map<string, number> = new Map();
     private readonly MAX_AUTO_RESET = 1; // only auto-reset once per process lifetime per tenant
+    private processedMessages: Set<string> = new Set();
 
     constructor(
         private readonly gateway: WhatsAppGateway,
         private readonly connectionManager: TenantConnectionManager,
+        private readonly kbService: KbIntegrationService,
+        private readonly tenantConfigService: TenantConfigService,
     ) { }
 
     async onModuleInit() {
@@ -205,8 +210,50 @@ export class WhatsAppService implements OnModuleInit {
             try {
                 const messages = (m as any).messages || [];
                 for (const msg of messages) {
-                    // ignore system/own messages
-                    if (msg.key && msg.key.fromMe) continue;
+                    const key = msg.key;
+                    const msgId = key.id;
+
+                    // 0. DEDUPLICATION: Check if we already processed this message ID recently
+                    if (this.processedMessages.has(msgId)) {
+                        this.logger.log(`[DEBUG][tenant=${tenantId}] Skipping duplicate message ID: ${msgId}`);
+                        continue;
+                    }
+                    this.processedMessages.add(msgId);
+                    // Keep cache size manageable
+                    if (this.processedMessages.size > 1000) {
+                        const first = this.processedMessages.values().next().value;
+                        this.processedMessages.delete(first);
+                    }
+
+                    const fromMe = key.fromMe;
+                    const remoteJid = key.remoteJid;
+                    const participant = key.participant || remoteJid;
+                    const pushName = msg.pushName;
+                    const messageContent = JSON.stringify(msg.message);
+
+                    // Get Bot's own JID (normalized)
+                    const myJid = sock.user?.id?.split(':')[0] + '@s.whatsapp.net';
+                    const senderJid = participant?.split(':')[0] + '@s.whatsapp.net';
+
+                    this.logger.log(`[DEBUG][tenant=${tenantId}] UPSERT: ID=${msgId}, Sender=${senderJid}, MyJid=${myJid}, FromMe=${fromMe}`);
+
+                    // 1. STRICT IDENTITY CHECK: Ignore if sender is ME (even if fromMe is false)
+                    if (fromMe || senderJid === myJid) {
+                        this.logger.log(`[DEBUG][tenant=${tenantId}] Skipping own message (Detected via JID match or fromMe)`);
+                        continue;
+                    }
+
+                    // 2. Extra safeguard: Check if message content matches bot's own error reply
+                    if (messageContent.includes("I can only answer questions related to the provided knowledge base")) {
+                        this.logger.warn(`[DEBUG][tenant=${tenantId}] LOOP DETECTED: Ignoring bot's own error message content.`);
+                        continue;
+                    }
+
+                    // 3. Ignore status updates (broadcasts)
+                    if (remoteJid === 'status@broadcast') {
+                        continue;
+                    }
+
                     await this.handleIncomingMessage(tenantId, msg as WAMessage);
                 }
             } catch (err) {
@@ -334,6 +381,50 @@ export class WhatsAppService implements OnModuleInit {
                 contactName,
                 contactNumber,
             });
+
+            // --- BOT AUTO-REPLY LOGIC ---
+            if (type === 'text') {
+                try {
+                    // Check if bot is enabled for this tenant
+                    const tenantConfig = await this.tenantConfigService.getDbConfig(tenantId);
+                    if (tenantConfig && tenantConfig.kbPointer) {
+                        // Query Bot
+                        const result = await this.kbService.queryBot(tenantId, contactNumber, content);
+                        const response = result.answer;
+
+                        if (response && response !== "Sorry, I'm having trouble connecting to my brain right now.") {
+                            // Send reply via WhatsApp
+                            const clientObj = this.clients.get(tenantId);
+                            if (clientObj && clientObj.sock) {
+                                this.logger.log(`[DEBUG][tenant=${tenantId}] Bot Replying to ${contactNumber} with: "${response.substring(0, 50)}..."`);
+                                await clientObj.sock.sendMessage(jid, { text: response });
+
+                                // Save AI message
+                                const aiMessage = messageRepo.create({
+                                    conversationId: conversation.id,
+                                    sender: 'ai',
+                                    content: response,
+                                    type: 'text',
+                                    createdAt: new Date(),
+                                    isRead: true
+                                });
+                                await messageRepo.save(aiMessage);
+
+                                // Update conversation
+                                conversation.lastMessage = response;
+                                conversation.lastMessageAt = new Date();
+                                await conversationRepo.save(conversation);
+
+                                // Emit to frontend
+                                this.gateway.emitMemberMessage(tenantId, aiMessage);
+                            }
+                        }
+                    }
+                } catch (botError) {
+                    this.logger.error(`[whatsapp][tenant=${tenantId}] Bot auto-reply failed`, botError);
+                }
+            }
+
         } catch (error) {
             this.logger.error(`Error handling incoming message for tenant ${tenantId}`, error);
         }

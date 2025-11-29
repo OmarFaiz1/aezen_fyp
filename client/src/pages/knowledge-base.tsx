@@ -1,10 +1,17 @@
+import { useState } from "react";
 import { KnowledgeBaseForm } from "@/components/knowledge-base-form";
 import { KnowledgeBaseList } from "@/components/knowledge-base-list";
 import { motion } from "framer-motion";
 
 export default function KnowledgeBase() {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleSuccess = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-6 p-6"
@@ -15,8 +22,8 @@ export default function KnowledgeBase() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <KnowledgeBaseForm />
-        <KnowledgeBaseList />
+        <KnowledgeBaseForm onSuccess={handleSuccess} />
+        <KnowledgeBaseList refreshTrigger={refreshTrigger} />
       </div>
     </motion.div>
   );

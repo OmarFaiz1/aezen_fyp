@@ -1,0 +1,42 @@
+[
+    {
+        "query": "hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:44:01.167847"
+    },
+    {
+        "query": "tell me about the zarposh jade",
+        "answer": "The Zarposh Jade is a stitched garment available for sale at a price of Rs. 4,399.20, down from its regular price of Rs. 5,499.00. It is made from cotton and is offered in a bottle green color. If you need more specific details or have additional questions about the product, feel free to ask!",
+        "timestamp": "2025-11-29T11:44:31.913845"
+    },
+    {
+        "query": "what about its delivery ",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T11:46:08.183851"
+    },
+    {
+        "query": "hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T11:47:47.271516"
+    },
+    {
+        "query": "give me buying link for jade",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T11:48:22.596411"
+    },
+    {
+        "query": "tell me about gpa calculatins",
+        "answer": "GPA calculations involve two types of averages: the Semester Grade Point Average (SGPA) and the Cumulative Grade Point Average (CGPA). \n\nThe grade points for each letter grade are defined as follows:\n- A+ = 4.00\n- A = 4.00\n- A- = 3.67\n- B+ = 3.33\n- B = 3.00\n- B- = 2.67\n- C+ = 2.33\n- C = 2.00\n- C- = 1.67\n- D+ = 1.33\n- D = 1.00\n- F = 0.00\n\nThe SGPA is calculated using the formula:\nSGPA = (P1*C1 + P2*C2 + P3*C3 + P4*C4) / C\n\nWhere:\n- P1, P2, P3, and P4 are the grade points earned in the courses.\n- C1, C2, C3, and C4 are the credit hours of the respective courses.\n- C is the total number of credits attempted in the semester, which is calculated as C = C1 + C2 + C3 + C4.\n\nThe SGPA indicates the GPA of courses completed in a specific semester, while the CGPA provides the cumulative GPA of all courses completed by a student up to that point. \n\nIf you need further information or clarification, feel free to ask!",
+        "timestamp": "2025-11-29T11:49:21.174101"
+    },
+    {
+        "query": "tell me about Registration of Students under Academic Warning ",
+        "answer": "At FAST University, students who are under academic warning or probation have specific registration requirements. \n\n1. **Courses with F Grades**: Students must register for all courses in which they received a grade of F, as long as those courses are being offered.\n\n2. **Courses with Low Passing Grades**: Students should also register for courses where they received grades of D, D+, or C-, provided that these courses are available.\n\n3. **Second Academic Warning**: If a student is on a second academic warning, they are not allowed to register for any new courses unless they receive a recommendation from the Head of Department (HoD) and obtain approval from the Controller of Examinations.\n\nIn regular fall and spring semesters, students without academic warning are expected to take courses as prescribed in the prospectus, with a normal course load of 5 courses. Final year students may register for one additional course, which can include their Final Year Project (FYP). \n\nIf you need further details, feel free to ask!",
+        "timestamp": "2025-11-29T11:56:37.949929"
+    },
+    {
+        "query": "Rules for Summer Semester ",
+        "answer": "The rules for the Summer Semester at FAST University are as follows:\n\n6.1 The Summer Semester will be offered as an optional semester with a duration of 8 to 9 weeks.\n\n6.2 The contact hours per week during the Summer Semester will be doubled to ensure that the course is completely taught in the summer, with half the duration compared to a regular semester.",
+        "timestamp": "2025-11-29T11:57:08.953034"
+    }
+]

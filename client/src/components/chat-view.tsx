@@ -149,7 +149,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg) => {
-            const isMe = msg.fromMe || msg.sender === 'agent';
+            const isMe = msg.fromMe || msg.sender === 'agent' || msg.sender === 'ai';
             const content = msg.content || msg.body;
             const time = msg.createdAt || msg.timestamp;
 
@@ -169,9 +169,12 @@ export function ChatView({ conversationId }: { conversationId: string }) {
                   ) : (
                     <p>{content}</p>
                   )}
-                  <p className="text-xs opacity-70 mt-1 text-right">
-                    {new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                  <div className="flex justify-between items-center mt-1 gap-2">
+                    {msg.sender === 'ai' && <span className="text-[10px] opacity-70 italic">(Sent by Bot)</span>}
+                    <p className="text-xs opacity-70 text-right">
+                      {new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
                 </div>
               </div>
             );

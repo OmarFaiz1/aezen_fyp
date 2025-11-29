@@ -8,12 +8,14 @@ import { WsJwtGuard } from './ws-jwt.guard';
 import { TenantModule } from '../tenant/tenant.module';
 import { TicketModule } from '../ticket/ticket.module';
 import { ChatController } from './chat.controller';
+import { KbIntegrationModule } from '../kb-integration/kb-integration.module';
 
 @Global()
 @Module({
     imports: [
         TenantModule,
         TicketModule,
+        KbIntegrationModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],

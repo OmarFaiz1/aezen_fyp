@@ -1,0 +1,15 @@
+{
+    "id": "bf05cf58-ccfd-449b-b9e5-65d4799f37c9",
+    "ticketNumber": "TKT-657B6B6C",
+    "title": "REFUND Request",
+    "description": "i want to refund my fee",
+    "priority": "medium",
+    "status": "open",
+    "tenantId": "fast_university",
+    "conversationId": "03225676122",
+    "assignedToId": "TM002",
+    "assignedToName": "Sana Khan",
+    "assignedToRole": "Refund Specialist",
+    "createdById": "03225676122",
+    "createdAt": "12.12.2025"
+}

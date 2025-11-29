@@ -1,0 +1,17 @@
+[
+    {
+        "query": "hi",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T06:41:07.286225"
+    },
+    {
+        "query": "how are you",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T06:41:32.874009"
+    },
+    {
+        "query": "MS ka kon sa program han",
+        "answer": "Sorry, exact information not found in FAST database.",
+        "timestamp": "2025-11-29T06:42:09.847026"
+    }
+]
