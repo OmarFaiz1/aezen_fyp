@@ -4,10 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MessageSquare, Eye } from "lucide-react";
+import { Search, MessageSquare, Eye, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const priorityColors = {
   low: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
@@ -29,12 +40,13 @@ interface TicketTableProps {
   title?: string;
 }
 
-export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/api/tickets", title = "Support Tickets" }: TicketTableProps) {
+export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/tickets", title = "Support Tickets" }: TicketTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
-
-  // ...
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: tickets = [] } = useQuery<any[]>({
     queryKey: [endpoint, statusFilter, priorityFilter, searchTerm],
@@ -49,6 +61,27 @@ export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/api/t
       const data = await res.json();
       console.log(`[TicketTable] Fetched ${data.length} tickets`);
       return data;
+    },
+  });
+
+  const deleteTicketMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/tickets/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [endpoint] });
+      setDeleteId(null);
+      toast({
+        title: "Ticket deleted",
+        description: "The ticket has been permanently removed.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
     },
   });
 
@@ -114,9 +147,15 @@ export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/api/t
                     <div className="font-mono text-sm w-16">{ticket.ticketNumber}</div>
                     <div className="flex-1">
                       <p className="font-medium">{ticket.title}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Assigned to {ticket.assignedTo?.name || "Unassigned"} • {new Date(ticket.createdAt).toLocaleDateString()}
-                      </p>
+                      <div className="text-sm text-muted-foreground flex flex-wrap gap-2 items-center">
+                        <span>Assigned to {ticket.assignedTo?.name || "Unassigned"}</span>
+                        <span>•</span>
+                        <span>
+                          By {ticket.assignedByType === 'ai' ? '🤖 AI' : `👤 ${ticket.assignedByUser?.name || 'Human'}`}
+                        </span>
+                        <span>•</span>
+                        <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                      </div>
                     </div>
                     <Badge
                       variant="secondary"
@@ -150,6 +189,14 @@ export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/api/t
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeleteId(ticket.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </motion.div>
               ))
@@ -157,6 +204,26 @@ export function TicketTable({ onViewTicket, onChatWithTicket, endpoint = "/api/t
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the ticket.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteId && deleteTicketMutation.mutate(deleteId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteTicketMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 }

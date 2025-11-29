@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Table,
@@ -53,6 +53,7 @@ const PERMISSIONS = [
   { id: "analytics", label: "Analytics" },
   { id: "settings", label: "Settings" },
   { id: "team", label: "Team Management" },
+  { id: "see-members", label: "See Members" },
   { id: "my-tickets", label: "My Tickets Access" },
 ];
 
@@ -69,6 +70,7 @@ export default function TeamManagement() {
     email: "",
     password: "",
     role: "Staff",
+    specialRole: "",
     permissions: [] as string[],
   });
 
@@ -155,6 +157,7 @@ export default function TeamManagement() {
       email: "",
       password: "",
       role: "Staff",
+      specialRole: "",
       permissions: [],
     });
   };
@@ -184,6 +187,7 @@ export default function TeamManagement() {
       email: member.email,
       password: "", // Password not editable directly here usually, or optional
       role: member.role,
+      specialRole: member.specialRole || "",
       permissions: member.permissions || [],
     });
     setIsEditOpen(true);
@@ -353,6 +357,34 @@ export default function TeamManagement() {
 }
 
 function MemberForm({ formData, setFormData, handlePermissionChange, handleSubmit, isLoading, mode }: any) {
+  const [newRole, setNewRole] = useState("");
+  const [isAddingRole, setIsAddingRole] = useState(false);
+  const [specialRoles, setSpecialRoles] = useState<string[]>([]);
+
+  // Fetch existing special roles
+  const { data: roles } = useQuery({
+    queryKey: ["/team/special-roles"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/team/special-roles");
+      return res.json();
+    },
+  });
+
+  useEffect(() => {
+    if (roles) {
+      setSpecialRoles(roles);
+    }
+  }, [roles]);
+
+  const handleAddRole = () => {
+    if (newRole && !specialRoles.includes(newRole)) {
+      setSpecialRoles([...specialRoles, newRole]);
+      setFormData({ ...formData, specialRole: newRole });
+      setNewRole("");
+      setIsAddingRole(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6 py-4">
       <div className="grid grid-cols-2 gap-4">
@@ -410,6 +442,48 @@ function MemberForm({ formData, setFormData, handlePermissionChange, handleSubmi
               <SelectItem value="Staff">Staff</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2 col-span-2">
+          <Label htmlFor="specialRole">Special Role</Label>
+          <div className="flex gap-2">
+            <Select
+              value={formData.specialRole || ""}
+              onValueChange={(value) =>
+                setFormData({ ...formData, specialRole: value })
+              }
+            >
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Select or add a special role" />
+              </SelectTrigger>
+              <SelectContent>
+                {specialRoles.map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {role}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsAddingRole(!isAddingRole)}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          {isAddingRole && (
+            <div className="flex gap-2 mt-2">
+              <Input
+                placeholder="Enter new role name"
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value)}
+              />
+              <Button type="button" onClick={handleAddRole} size="sm">
+                Add
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

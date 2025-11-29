@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Query, Request, Delete } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TicketPriority, TicketStatus } from './ticket.entity';
@@ -50,5 +50,10 @@ export class TicketController {
     @Patch(':id')
     update(@Param('id') id: string, @Body() updateTicketDto: any, @Request() req) {
         return this.ticketService.updateTicket(req.user.tenantId, id, updateTicketDto);
+    }
+
+    @Delete(':id')
+    remove(@Param('id') id: string, @Request() req) {
+        return this.ticketService.deleteTicket(req.user.tenantId, id);
     }
 }

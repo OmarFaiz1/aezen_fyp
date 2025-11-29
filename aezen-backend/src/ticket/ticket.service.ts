@@ -22,11 +22,11 @@ export class TicketService {
         status: TicketStatus;
         conversationId?: string;
         assignedToId?: string;
+        assignedByType?: 'ai' | 'human';
     }) {
         const repo = await this.getRepository(tenantId);
 
         // Generate Ticket Number (TK###)
-        // We need to find the last ticket number for this tenant
         const lastTicket = await repo.findOne({
             where: { tenantId },
             order: { createdAt: 'DESC' },
@@ -47,10 +47,21 @@ export class TicketService {
             ticketNumber,
             tenantId,
             createdById: userId,
+            assignedByType: data.assignedByType || 'human',
+            assignedByUserId: userId, // Track who created/assigned it
         });
         console.log(`[TicketService] Creating ticket for tenant ${tenantId}, user ${userId}:`, ticket);
 
         return repo.save(ticket);
+    }
+
+    async deleteTicket(tenantId: string, id: string) {
+        const repo = await this.getRepository(tenantId);
+        const ticket = await repo.findOne({ where: { id } });
+        if (!ticket) {
+            throw new Error('Ticket not found');
+        }
+        return repo.remove(ticket);
     }
 
     async getTickets(tenantId: string, filters?: { status?: TicketStatus; priority?: TicketPriority; search?: string }) {
@@ -151,6 +162,7 @@ export class TicketService {
         tickets.forEach(t => {
             if (t.assignedToId) userIds.add(t.assignedToId);
             if (t.createdById) userIds.add(t.createdById);
+            if (t.assignedByUserId) userIds.add(t.assignedByUserId);
         });
 
         if (userIds.size === 0) return tickets;
@@ -165,10 +177,12 @@ export class TicketService {
             return tickets.map(t => {
                 const assignedTo = t.assignedToId ? userMap.get(t.assignedToId) : undefined;
                 const createdBy = t.createdById ? userMap.get(t.createdById) : undefined;
+                const assignedByUser = t.assignedByUserId ? userMap.get(t.assignedByUserId) : undefined;
                 return {
                     ...t,
                     assignedTo: assignedTo ? { id: assignedTo.id, name: assignedTo.name || '', email: assignedTo.email } : null,
                     createdBy: createdBy ? { id: createdBy.id, name: createdBy.name || '', email: createdBy.email } : null,
+                    assignedByUser: assignedByUser ? { id: assignedByUser.id, name: assignedByUser.name || '', email: assignedByUser.email } : null,
                 };
             });
         } catch (error) {

@@ -36,6 +36,7 @@ export class TeamService {
             passwordHash: passwordHash,
             role: memberData.role,
             name: memberData.name,
+            specialRole: memberData.specialRole,
             permissions: memberData.permissions || [],
             tenant: tenant,
         });
@@ -48,9 +49,19 @@ export class TeamService {
     async getMembers(tenantId: string) {
         const users = await this.userRepository.find({
             where: { tenant: { id: tenantId } },
-            select: ['id', 'email', 'name', 'role', 'permissions'], // Exclude passwordHash
+            select: ['id', 'email', 'name', 'role', 'specialRole', 'permissions'], // Exclude passwordHash
         });
         return users;
+    }
+
+    async getSpecialRoles(tenantId: string) {
+        const users = await this.userRepository.createQueryBuilder('user')
+            .select('DISTINCT user.specialRole', 'specialRole')
+            .where('user.tenantId = :tenantId', { tenantId })
+            .andWhere('user.specialRole IS NOT NULL')
+            .getRawMany();
+
+        return users.map(u => u.specialRole);
     }
 
     async updateMember(currentUser: any, memberId: string, updates: any) {
@@ -73,6 +84,7 @@ export class TeamService {
         if (updates.name) member.name = updates.name;
         if (updates.role && updates.role !== 'Owner') member.role = updates.role; // Prevent escalating to Owner via update for now
         if (updates.permissions) member.permissions = updates.permissions;
+        if (updates.specialRole !== undefined) member.specialRole = updates.specialRole;
 
         return this.userRepository.save(member);
     }

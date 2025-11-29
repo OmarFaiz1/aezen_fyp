@@ -18,6 +18,11 @@ export class TeamController {
         return this.teamService.getMembers(req.user.tenantId);
     }
 
+    @Get('special-roles')
+    async getSpecialRoles(@Request() req) {
+        return this.teamService.getSpecialRoles(req.user.tenantId);
+    }
+
     @Patch('members/:id')
     async updateMember(@Request() req, @Param('id') id: string, @Body() body: any) {
         return this.teamService.updateMember(req.user, id, body);

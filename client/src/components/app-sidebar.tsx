@@ -76,6 +76,11 @@ const menuItems = [
     icon: Users,
   },
   {
+    title: "See Members",
+    url: "/see-members",
+    icon: Users,
+  },
+  {
     title: "Voice Calls",
     url: "/voice-calls",
     icon: Phone,

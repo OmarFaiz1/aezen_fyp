@@ -59,6 +59,12 @@ export class Ticket {
     @Column({ nullable: true })
     createdById: string;
 
+    @Column({ default: 'human' })
+    assignedByType: 'ai' | 'human';
+
+    @Column({ nullable: true })
+    assignedByUserId: string;
+
     @CreateDateColumn()
     createdAt: Date;
 

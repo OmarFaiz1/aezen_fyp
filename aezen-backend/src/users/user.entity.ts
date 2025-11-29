@@ -24,6 +24,9 @@ export class User {
     @Column({ nullable: true })
     name: string;
 
+    @Column({ nullable: true })
+    specialRole: string;
+
     @ManyToOne(() => Tenant, (tenant) => tenant.users)
     tenant: Tenant;
 }

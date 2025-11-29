@@ -38,5 +38,20 @@
         "query": "Rules for Summer Semester ",
         "answer": "The rules for the Summer Semester at FAST University are as follows:\n\n6.1 The Summer Semester will be offered as an optional semester with a duration of 8 to 9 weeks.\n\n6.2 The contact hours per week during the Summer Semester will be doubled to ensure that the course is completely taught in the summer, with half the duration compared to a regular semester.",
         "timestamp": "2025-11-29T11:57:08.953034"
+    },
+    {
+        "query": "hiii",
+        "answer": "Hello! How can I assist you?",
+        "timestamp": "2025-11-29T12:37:52.259680"
+    },
+    {
+        "query": "who are you",
+        "answer": "Sorry, exact information not found in the database.",
+        "timestamp": "2025-11-29T12:38:01.803710"
+    },
+    {
+        "query": "tell me about fast",
+        "answer": "FAST University, also known as FAST-NUCES, is an educational institution that offers various training and development programs, including certification programs in specific fields like fintech, people analytics, and entrepreneurship. The university aims to support students and faculty in becoming AI-literate, promoting responsible and effective use of Generative AI within its educational mission. It has campuses and provides resources such as scholarships, degree verification, and a library. The specific location mentioned is FAST-House, Rohtas Road, G-9/4, Islamabad - 44000.",
+        "timestamp": "2025-11-29T12:38:16.312098"
     }
 ]
